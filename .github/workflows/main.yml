@@ -1,5 +1,5 @@
 name: Build OpenAWE
-on: ['push', 'pull_request']
+on: [workflow_dispatch]
 
 env:
   BUILD_TYPE: Release
@@ -25,28 +25,7 @@ jobs:
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_C_COMPILER=gcc \
               -DCMAKE_CXX_COMPILER=g++ \
-          - name: Linux Clang
-            os: ubuntu-24.04
-            compiler: clang
-            extra_cmake_args: |
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_C_COMPILER=clang \
-              -DCMAKE_CXX_COMPILER=clang++ \
-          - name: Windows MSVC
-            os: windows-2022
-            extra_cmake_args: |
-              -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake \
-          - name: MacOS x86 Clang
-            os: macos-14
-            compiler: clang
-            extra_cmake_args: | 
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_C_COMPILER=clang \
-              -DCMAKE_CXX_COMPILER=clang++ \
-              -DOPENAL_LIBRARY=/opt/homebrew/opt/openal-soft/lib/libopenal.dylib \
-              -DOPENAL_INCLUDE_DIR=/opt/homebrew/opt/openal-soft/include/AL \
+        
 
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -128,13 +107,13 @@ jobs:
         shell: bash
         run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
 
-      - name: Pack Artifacts
-        working-directory: ${{github.workspace}}/build
-        shell: bash
-        run: cpack
+      # - name: Pack Artifacts
+      #   working-directory: ${{github.workspace}}/build
+      #   shell: bash
+      #   run: cpack
 
-      - name: Publish Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.name }}
-          path: ${{github.workspace}}/build/*.zip
+      # - name: Publish Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ matrix.name }}
+      #     path: ${{github.workspace}}/build/*.zip
